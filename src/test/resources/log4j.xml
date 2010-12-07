@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE log4j:configuration SYSTEM "file:./log4j.dtd">
+
+<log4j:configuration>
+    <appender name="CONSOLE-ALL" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%-5p] %c{2} - %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="org.apache.commons.digester" additivity="true">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="com.devx" additivity="true">
+        <priority value="DEBUG"/>
+    </category>
+
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE-ALL"/>
+    </root>
+</log4j:configuration>

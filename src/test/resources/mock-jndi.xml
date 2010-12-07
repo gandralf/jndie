@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--
+  - Remember to change the testDS connection parameters to match your database.
+  - And create a table named customer there, with two collumns: id (number)
+  - and cust_name (varchar(42))
+  -->
+
+<mock-jndi default-environment="mockEnvironment">
+	<string name="greetings">Hello, world!</string>
+	
+	<string name="tfc/test/greetings">Hello, path!</string>
+	
+	<string name="java:/pkgs">Hello, pkgs!</string>
+
+	<data-source name="testDS">
+	    <connection-url>jdbc:hsqldb:mem:testdb</connection-url>
+	    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+	</data-source>
+	
+	<bean name="testBean" type="com.devx.naming.SimpleBean">
+		<property name="message">Hello, world!</property>
+	</bean>
+
+    <environment name="anotherEnvironment">
+		<resource-ref name="greetings-ref" ref-name="greetings" />
+        <string name="greetings">Hello, env!</string>
+    </environment>
+
+    <environment name="mockEnvironment">
+		<resource-ref name="jdbc/dataSource" ref-name="testDS" />
+    </environment>
+</mock-jndi>

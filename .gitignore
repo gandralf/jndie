@@ -1,0 +1,11 @@
+.settings/*
+.classpath
+.project
+jndie.iml
+jndie.ipr
+jndie.iws
+target/*
+sso.iml
+.DS_Store
+Thumbs.db
+
