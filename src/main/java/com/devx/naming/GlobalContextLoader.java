@@ -16,7 +16,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
     private static boolean parsed;
     private static GlobalContextLoader instance;
     private String defaultEnvironment = null;
-    private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\{([\\w\\.]+)\\}");
+    private static final Pattern ENV_PATTERN = Pattern.compile("(\\\\)?\\$\\{([\\w\\.\\-]+)\\}");
 
     private GlobalContextLoader() {
     }
@@ -29,6 +29,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
     	return defaultEnvironment;
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void setDefaultEnvironment(String value) {
     	defaultEnvironment = value;
     }
@@ -121,9 +122,14 @@ public class GlobalContextLoader extends EnvironmentLoader {
         StringBuffer result = new StringBuffer(builder.length());
         Matcher matcher = ENV_PATTERN.matcher(builder);
         while (matcher.find()) {
-            String value = System.getProperty(matcher.group(1));
-            if (value != null) {
-                matcher.appendReplacement(result, value);
+            String name = matcher.group(2);
+            if (matcher.group(1) == null) { // Not a escape
+                String value = System.getProperty(name);
+                if (value != null) {
+                    matcher.appendReplacement(result, value);
+                }
+            } else { // Escape char, like \${something}
+                matcher.appendReplacement(result, "\\${" + name + "}");
             }
         }
         matcher.appendTail(result);
@@ -131,6 +137,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
         return new ByteArrayInputStream(result.toString().getBytes());
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void newDataSource(MockDataSource dataSource) {
         BeanWrapper beanWrapper = new BeanWrapper(null, dataSource) {
             public String getName() {
@@ -141,6 +148,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
         newBean(beanWrapper);
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public void newEnvironment(final EnvironmentLoader loader) {
         newObject(loader.getName(), new EnvironmentManager() {
 			public Map<String, Object> getEnvironment() {

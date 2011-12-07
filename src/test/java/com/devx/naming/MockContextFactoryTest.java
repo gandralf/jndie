@@ -42,6 +42,7 @@ public class MockContextFactoryTest extends TestCase {
      * before a "java:" name lookup, wich is done during the
      * testString call.
      */
+    @SuppressWarnings({"JavaDoc"})
     public void testPkgs2() throws NamingException {
         String actual = (String) context.lookup("java:/pkgs");
         assertEquals("Hello, pkgs!", actual);
@@ -110,5 +111,14 @@ public class MockContextFactoryTest extends TestCase {
     public void testEnvValue() throws NamingException {
         String value = (String) context.lookup("java.naming.factory.initial");
         assertEquals("com.devx.naming.MockContextFactory", value);
+        value = (String) context.lookup("not-found-env");
+        assertEquals("${not-found}", value);
+    }
+
+    public void testEnvMacroEscape() throws NamingException {
+        String value = (String) context.lookup("macro-escape");
+        assertEquals("${java.naming.factory.initial}", value);
+        value = (String) context.lookup("another-macro-escape");
+        assertEquals("\\${java.naming.factory.initial}", value);
     }
 }

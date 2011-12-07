@@ -32,4 +32,7 @@
     </environment>
 
     <string name="java.naming.factory.initial">${java.naming.factory.initial}</string>
+    <string name="not-found-env">${not-found}</string>
+    <string name="macro-escape">\${java.naming.factory.initial}</string>
+    <string name="another-macro-escape">\\${java.naming.factory.initial}</string>
 </mock-jndi>
