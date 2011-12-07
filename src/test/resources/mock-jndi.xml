@@ -30,4 +30,6 @@
     <environment name="mockEnvironment">
 		<resource-ref name="jdbc/dataSource" ref-name="testDS" />
     </environment>
+
+    <string name="java.naming.factory.initial">${java.naming.factory.initial}</string>
 </mock-jndi>

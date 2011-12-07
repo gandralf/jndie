@@ -3,10 +3,10 @@ package com.devx.naming;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * GlobalContextLoader loads mock-jndi.xml file
@@ -16,6 +16,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
     private static boolean parsed;
     private static GlobalContextLoader instance;
     private String defaultEnvironment = null;
+    private static final Pattern ENV_PATTERN = Pattern.compile("\\$\\{([\\w\\.]+)\\}");
 
     private GlobalContextLoader() {
     }
@@ -99,7 +100,7 @@ public class GlobalContextLoader extends EnvironmentLoader {
         }
         
         try {
-            digester.parse(input);
+            digester.parse(replaceEnvMacros(input));
             input.close();
         } catch (SAXException e) {
             throw (IllegalStateException) new IllegalStateException("Illegal mock-jndi.xml file").initCause(e);
@@ -107,7 +108,29 @@ public class GlobalContextLoader extends EnvironmentLoader {
         
         buildObjectMap();
     }
-    
+
+    private InputStream replaceEnvMacros(InputStream input) throws IOException {
+        StringBuffer builder = new StringBuffer();
+        Reader reader = new InputStreamReader(input);
+        char[] buff = new char[1024];
+        int len;
+        while ((len = reader.read(buff)) != -1) {
+            builder.append(buff, 0, len);
+        }
+
+        StringBuffer result = new StringBuffer(builder.length());
+        Matcher matcher = ENV_PATTERN.matcher(builder);
+        while (matcher.find()) {
+            String value = System.getProperty(matcher.group(1));
+            if (value != null) {
+                matcher.appendReplacement(result, value);
+            }
+        }
+        matcher.appendTail(result);
+
+        return new ByteArrayInputStream(result.toString().getBytes());
+    }
+
     public void newDataSource(MockDataSource dataSource) {
         BeanWrapper beanWrapper = new BeanWrapper(null, dataSource) {
             public String getName() {

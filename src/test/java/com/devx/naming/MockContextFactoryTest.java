@@ -106,4 +106,9 @@ public class MockContextFactoryTest extends TestCase {
             // OK
         }
     }
+
+    public void testEnvValue() throws NamingException {
+        String value = (String) context.lookup("java.naming.factory.initial");
+        assertEquals("com.devx.naming.MockContextFactory", value);
+    }
 }
